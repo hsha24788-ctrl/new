@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>نظام إدارة الكافيه</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef1f0;--card:#fff;--ink:#14262a;--mut:#5d6f72;--pri:#12474f;--onpri:#fff;--acc:#e8a317;--bad:#c8452d;--ok:#2f8f5b;--line:#d5dcdb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1b1d;--card:#182a2d;--ink:#e8efee;--mut:#9bb0b2;--pri:#5fb3bd;--onpri:#0f1b1d;--acc:#f2b134;--bad:#ef7b64;--ok:#5cc98d;--line:#2a4246;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1b1d;--card:#182a2d;--ink:#e8efee;--mut:#9bb0b2;--pri:#5fb3bd;--onpri:#0f1b1d;--acc:#f2b134;--bad:#ef7b64;--ok:#5cc98d;--line:#2a4246;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Cairo',Tahoma,sans-serif;line-height:1.5}
+header{background:var(--pri);color:var(--onpri);padding:10px 16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+header h1{font-size:20px;margin:0;font-weight:800}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+nav button{background:transparent;color:inherit;border:1.5px solid transparent;padding:6px 14px;border-radius:8px;font:inherit;cursor:pointer}
+nav button.on{border-color:var(--acc);background:rgba(255,255,255,.12);font-weight:800}
+main{padding:14px;max-width:1200px;margin:auto}
+button,input,select{font:inherit;color:inherit}
+input,select{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 10px;max-width:100%}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.btn{background:var(--pri);color:var(--onpri);border:0;border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600}
+.btn.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.bad{background:var(--bad);color:#fff}
+.btn.big{width:100%;padding:12px;font-size:17px;background:var(--acc);color:#14262a;font-weight:800}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.pos{display:grid;grid-template-columns:1fr 350px;gap:14px;align-items:start}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:20px;padding:4px 14px;cursor:pointer}
+.chip.on{background:var(--pri);color:var(--onpri);border-color:var(--pri)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.item:hover{border-color:var(--acc)}.item:disabled{opacity:.45;cursor:not-allowed}
+.item b{font-size:15px}.item span{color:var(--mut);font-size:14px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.qty{display:flex;align-items:center;gap:6px}
+.qty button{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:transparent;cursor:pointer}
+.tot{font-size:22px;font-weight:800;margin:10px 0}
+.cols{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:start}
+.col h3{margin:0 0 8px;font-size:16px}
+.ord{border-inline-start:5px solid var(--acc);margin-bottom:10px}
+.ord small{color:var(--mut)}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:start;padding:8px;border-bottom:1px solid var(--line)}
+.wrap{overflow-x:auto}
+.low{color:var(--bad);font-weight:800}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.kpi b{display:block;font-size:26px}.kpi span{color:var(--mut)}
+.form{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+#toast{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));inset-inline:0;margin:auto;width:max-content;max-width:90%;background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:10px;display:none;z-index:9}
+@media(max-width:860px){.pos{grid-template-columns:1fr}.cols{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.cols{grid-template-columns:1fr}}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:8}
+.rc{background:#fff;color:#111;width:300px;max-height:90vh;overflow:auto;padding:16px;border-radius:8px;font-size:14px}
+@media print{body>*:not(#rcv){display:none!important}.ov{position:static;background:none}.rc{width:100%}.noprint{display:none}}
+</style>
+</head>
+<body>
+<header><h1>☕ نظام الكافيه</h1>
+<nav id="nav"></nav><button class="btn alt" style="margin-inline-start:auto;color:inherit" onclick="theme()" aria-label="تغيير الثيم">🌓</button></header>
+<main id="app"></main>
+<div id="toast" role="status"></div><div id="rcv"></div>
+<script>
+const KEY='cafe-system-v1';
+const def=()=>({
+ menu:[
+  {id:1,n:'اسبريسو',c:'قهوة',p:40,r:{bn:18}},
+  {id:2,n:'قهوة تركي',c:'قهوة',p:35,r:{bn:10,sk:10}},
+  {id:3,n:'كابتشينو',c:'قهوة',p:60,r:{bn:18,lb:150}},
+  {id:4,n:'لاتيه',c:'قهوة',p:65,r:{bn:18,lb:220}},
+  {id:5,n:'فرابيه',c:'قهوة',p:70,r:{bn:18,lb:150,sk:20}},
+  {id:6,n:'شاي',c:'مشروبات',p:25,r:{sh:3,sk:10}},
+  {id:7,n:'ينسون',c:'مشروبات',p:25,r:{sk:10}},
+  {id:8,n:'عصير برتقال',c:'مشروبات',p:50,r:{or:3}},
+  {id:9,n:'ليمون بالنعناع',c:'مشروبات',p:45,r:{lm:2,sk:15}},
+  {id:10,n:'تشيز كيك',c:'حلويات',p:75,r:{cc:1}},
+  {id:11,n:'براونيز',c:'حلويات',p:55,r:{br:1}},
+  {id:12,n:'كرواسون',c:'حلويات',p:45,r:{cr:1}}],
+ stock:{bn:{n:'بن',u:'جم',q:5000,m:500},lb:{n:'لبن',u:'مل',q:20000,m:3000},sk:{n:'سكر',u:'جم',q:3000,m:400},sh:{n:'شاي',u:'جم',q:1000,m:100},or:{n:'برتقال',u:'حبة',q:60,m:10},lm:{n:'ليمون',u:'حبة',q:40,m:8},cc:{n:'تشيز كيك',u:'قطعة',q:20,m:4},br:{n:'براونيز',u:'قطعة',q:25,m:5},cr:{n:'كرواسون',u:'قطعة',q:25,m:5}},
+ orders:[],seq:1,nid:13});
+let S=null;
+try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!S||!S.menu)S=def();
+function mig(){S.exp=S.exp||[];S.set=S.set||{name:'الكافيه',tax:0,svc:0};S.staff=S.staff||['الكاشير'];S.cust=S.cust||{};S.menu.forEach(m=>{if(m.k==null)m.k=Math.round(m.p*.3)})}
+mig();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+let tab='pos',cat='الكل',cart={},disc=0,table='',pay='كاش',qs='',type='صالة',ph='',rd=false,cur=0;
+const TABS={pos:'الكاشير',ord:'الطلبات',inv:'المخزون',exp:'المصروفات',rep:'التقارير',menu:'المنيو',set:'الإعدادات'};
+const ST=['جديد','بيتحضر','جاهز','اتسلم'];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $=s=>document.querySelector(s);
+const money=n=>(Math.round(n*100)/100).toLocaleString('ar-EG')+' ج';
+const item=id=>S.menu.find(m=>m.id==id);
+let tt;
+function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(tt);tt=setTimeout(()=>e.style.display='none',2500)}
+function go(t){tab=t;render()}
+function sub(){return Object.keys(cart).reduce((a,id)=>a+item(id).p*cart[id],0)}
+function add(id,d){cart[id]=(cart[id]||0)+d;if(cart[id]<=0)delete cart[id];render()}
+function place(){
+ const ids=Object.keys(cart);
+ if(!ids.length)return toast('السلة فاضية');
+ const need={};
+ ids.forEach(id=>{const m=item(id);for(const k in m.r)need[k]=(need[k]||0)+m.r[k]*cart[id]});
+ for(const k in need){if(S.stock[k].q<need[k])return toast('المخزون مش كفاية: '+S.stock[k].n)}
+ for(const k in need)S.stock[k].q-=need[k];
+ const total=calc().t;
+ S.orders.push({id:S.seq++,type,by:S.staff[cur]||'',ph,c:calc(),items:ids.map(id=>({id:+id,n:item(id).n,q:cart[id],p:item(id).p,k:item(id).k||0})),total,disc,table,pay,st:0,t:Date.now()});
+ if(ph){const u=S.cust[ph]=S.cust[ph]||{pts:0,vis:0,sp:0};if(rd&&u.pts>=100)u.pts-=100;u.pts+=Math.floor(total/10);u.vis++;u.sp+=total}cart={};disc=0;table='';ph='';rd=false;save();toast('تم تسجيل الطلب');render();showRc(S.orders[S.orders.length-1].id);
+}
+function adv(id){const o=S.orders.find(x=>x.id==id);if(o.st<3)o.st++;save();render()}
+function cancel(id){const o=S.orders.find(x=>x.id==id);if(!o||o.st>=3||!confirm('تلغي الطلب #'+id+' وترجّع المخزون؟'))return;o.items.forEach(x=>{const m=item(x.id);if(m)for(const k in m.r)if(S.stock[k])S.stock[k].q+=m.r[k]*x.q});o.st=4;save();toast('تم إلغاء الطلب');render()}
+function showRc(id){const o=S.orders.find(x=>x.id==id);$('#rcv').innerHTML=`<div class="ov"><div class="rc"><h3 style="text-align:center;margin:0">☕ ${esc(S.set.name)}</h3><p style="text-align:center;margin:4px 0">فاتورة #${o.id} · ${o.type||'صالة'}${o.table?' · طاولة '+esc(o.table):''}<br>${new Date(o.t).toLocaleString('ar-EG')}</p>${o.items.map(x=>`<div class="row"><span>${esc(x.n)} × ${x.q}</span><span>${money(x.p*x.q)}</span></div>`).join('')}${o.disc?`<div class="row"><span>خصم ${o.disc}%</span><span></span></div>`:''}${o.c&&o.c.sv?`<div class="row"><span>خدمة</span><span>${money(o.c.sv)}</span></div>`:''}${o.c&&o.c.tx?`<div class="row"><span>ضريبة</span><span>${money(o.c.tx)}</span></div>`:''}${o.by?`<div class="row"><small>الكاشير: ${esc(o.by)}</small><span></span></div>`:''}<div class="row"><b>الإجمالي</b><b>${money(o.total)}</b></div><p style="text-align:center">شكرًا لزيارتكم</p><div class="form noprint"><button class="btn" onclick="window.print()">طباعة</button><button class="btn alt" style="color:#111" onclick="$('#rcv').innerHTML=''">إغلاق</button></div></div></div>`}
+function theme(){const r=document.documentElement,d=r.getAttribute('data-theme')=='dark'||(!r.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme:dark)').matches);r.setAttribute('data-theme',d?'light':'dark')}
+function restore(){try{const d=JSON.parse($('#bk').value);if(!d.menu||!d.stock)throw 0;S=d;mig();save();toast('تم الاسترجاع');render()}catch(e){toast('النص مش صحيح')}}
+function addExp(){const n=$('#en').value.trim(),v=+$('#ev').value;if(!n||!(v>0))return toast('اكتب البند والمبلغ');S.exp.push({n,v,t:Date.now()});save();render()}
+function restock(k){const v=+$('#r_'+k).value;if(v>0){S.stock[k].q+=v;save();toast('تمت إضافة المخزون');render()}}
+function setMin(k,v){S.stock[k].m=+v||0;save();render()}
+function addStock(){
+ const n=$('#sn').value.trim(),u=$('#su').value.trim()||'وحدة',q=+$('#sq').value;
+ if(!n)return toast('اكتب اسم الصنف');
+ S.stock['x'+Date.now()]={n,u,q:q||0,m:0};save();render();
+}
+function addItem(){
+ const n=$('#mn').value.trim(),c=$('#mc').value.trim()||'أخرى',p=+$('#mp').value;
+ if(!n||!(p>0))return toast('اكتب الاسم والسعر');
+ S.menu.push({id:S.nid++,n,c,p,r:{}});save();render();
+}
+function setCost(id,v){item(id).k=Math.max(0,+v||0);save();toast('تم تعديل التكلفة')}
+function setPrice(id,v){if(+v>0){item(id).p=+v;save();toast('تم تعديل السعر')}}
+function delItem(id){S.menu=S.menu.filter(m=>m.id!=id);delete cart[id];save();render()}
+function reset(){if(confirm('هتمسح كل البيانات وترجع للوضع الأصلي؟')){S=def();mig();cart={};save();render()}}
+
+const out=m=>Object.keys(m.r).some(k=>S.stock[k]&&S.stock[k].q<m.r[k]);
+const lowN=()=>Object.values(S.stock).filter(s=>s.q<=s.m).length;
+function calc(){const s=sub(),d1=s*disc/100,r=(rd&&S.cust[ph]&&S.cust[ph].pts>=100)?20:0,b=Math.max(0,s-d1-r),sv=b*S.set.svc/100,tx=(b+sv)*S.set.tax/100;return{s,b,sv,tx,r,t:b+sv+tx}}
+function grid(){return S.menu.filter(m=>(cat=='الكل'||m.c==cat)&&m.n.includes(qs)).map(m=>`<button class="item" ${out(m)?'disabled':''} onclick="add(${m.id},1)"><b>${esc(m.n)}</b><span>${out(m)?'خلص':money(m.p)}</span></button>`).join('')}
+function vPos(){
+ const cats=['الكل',...new Set(S.menu.map(m=>m.c))];
+ 
+ const ids=Object.keys(cart),k=calc(),t=k.t;
+ return `<div class="pos"><div>
+ <input placeholder="بحث في المنيو" value="${esc(qs)}" oninput="qs=this.value;$('#gr').innerHTML=grid()" style="width:100%;margin-bottom:10px"><div class="chips">${cats.map(c=>`<button class="chip ${c==cat?'on':''}" onclick="cat='${esc(c)}';render()">${esc(c)}</button>`).join('')}</div>
+ <div class="grid" id="gr">${grid()}</div></div>
+ <div class="card"><h3 style="margin-top:0">الطلب الحالي</h3>
+ ${ids.length?ids.map(id=>`<div class="row"><span>${esc(item(id).n)}</span><span class="qty"><button onclick="add(${id},-1)" aria-label="نقص">−</button>${cart[id]}<button onclick="add(${id},1)" aria-label="زوّد">+</button></span><span>${money(item(id).p*cart[id])}</span></div>`).join(''):'<p style="color:var(--mut)">اختار أصناف من المنيو عشان تبدأ الطلب.</p>'}
+ <div class="form" style="margin-top:12px">
+ <input placeholder="رقم الطاولة" value="${esc(table)}" onchange="table=this.value" size="10"><input placeholder="موبايل العميل" value="${esc(ph)}" onchange="ph=this.value.trim();rd=false;render()" size="12"><select onchange="cur=+this.value">${S.staff.map((n,i)=>`<option value="${i}" ${i==cur?'selected':''}>${esc(n)}</option>`).join('')}</select>${ph&&S.cust[ph]?`<label><input type="checkbox" ${rd?'checked':''} ${S.cust[ph].pts<100?'disabled':''} onchange="rd=this.checked;render()"> نقاطه ${S.cust[ph].pts} · استبدل 100 = خصم 20 ج</label>`:ph?'<small>عميل جديد</small>':''}
+ <input type="number" min="0" max="100" placeholder="خصم %" value="${disc||''}" onchange="disc=Math.min(100,Math.max(0,+this.value||0));render()" style="width:90px">
+ <select onchange="type=this.value">${['صالة','تيك أواي','ديليفري'].map(p=>`<option ${p==type?'selected':''}>${p}</option>`).join('')}</select><select onchange="pay=this.value">${['كاش','فيزا','محفظة'].map(p=>`<option ${p==pay?'selected':''}>${p}</option>`).join('')}</select></div>
+ ${k.r?`<div class="row"><span>استبدال نقاط</span><span>−${money(k.r)}</span></div>`:''}${k.sv?`<div class="row"><span>خدمة ${S.set.svc}%</span><span>${money(k.sv)}</span></div>`:''}${k.tx?`<div class="row"><span>ضريبة ${S.set.tax}%</span><span>${money(k.tx)}</span></div>`:''}<div class="tot">الإجمالي: ${money(t)}</div>
+ <button class="btn big" onclick="place()">تأكيد الطلب</button></div></div>`;
+}
+function vOrd(){
+ const col=i=>{const l=S.orders.filter(o=>o.st==i).slice(i==3?-6:0).reverse();
+  return `<div class="col"><h3>${ST[i]} (${S.orders.filter(o=>o.st==i).length})</h3>${l.map(o=>`<div class="card ord"><b>#${o.id}</b> · ${o.type||'صالة'} ${o.table?'· طاولة '+esc(o.table):''}<br><small>${new Date(o.t).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})} · ${o.pay}</small>
+  <div>${o.items.map(x=>`${esc(x.n)} × ${x.q}`).join('، ')}</div><b>${money(o.total)}</b>
+  <div class="form" style="margin:8px 0 0">${o.st<3?`<button class="btn" onclick="adv(${o.id})">${['ابدأ التحضير','جاهز','تسليم'][o.st]}</button>`:''}<button class="btn alt" onclick="showRc(${o.id})">فاتورة</button>${o.st<3?`<button class="btn alt" onclick="cancel(${o.id})">إلغاء</button>`:''}</div></div>`).join('')||'<small style="color:var(--mut)">مفيش طلبات</small>'}</div>`};
+ return `<div class="cols">${[0,1,2,3].map(col).join('')}</div>`;
+}
+function vInv(){
+ const ks=Object.keys(S.stock);
+ return `<div class="card"><div class="form"><input id="sn" placeholder="اسم صنف جديد"><input id="su" placeholder="الوحدة" size="8"><input id="sq" type="number" placeholder="الكمية" style="width:100px"><button class="btn" onclick="addStock()">إضافة صنف</button></div>
+ <div class="wrap"><table><tr><th>الصنف</th><th>المتاح</th><th>حد التنبيه</th><th>توريد</th></tr>
+ ${ks.map(k=>{const s=S.stock[k],low=s.q<=s.m;return `<tr><td>${esc(s.n)}</td><td class="${low?'low':''}">${Math.round(s.q*10)/10} ${esc(s.u)} ${low?'· قارب على الانتهاء':''}</td>
+ <td><input type="number" value="${s.m}" style="width:90px" onchange="setMin('${k}',this.value)"></td>
+ <td><input id="r_${k}" type="number" min="0" style="width:90px"> <button class="btn alt" onclick="restock('${k}')">إضافة</button></td></tr>`}).join('')}</table></div></div>`;
+}
+function vRep(){
+ const d=new Date().toDateString(),o=S.orders.filter(x=>new Date(x.t).toDateString()==d&&x.st<4);
+ const sum=o.reduce((a,x)=>a+x.total,0),ex=S.exp.filter(x=>new Date(x.t).toDateString()==d).reduce((a,x)=>a+x.v,0),cost=o.reduce((a,x)=>a+x.items.reduce((b,i)=>b+(i.k||0)*i.q,0),0),pays={},top={};
+ o.forEach(x=>{pays[x.pay]=(pays[x.pay]||0)+x.total;x.items.forEach(i=>top[i.n]=(top[i.n]||0)+i.q)});
+ const tl=Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,5);
+ const low=Object.values(S.stock).filter(s=>s.q<=s.m);
+ return `<div class="kpis"><div class="card kpi"><span>مبيعات النهارده</span><b>${money(sum)}</b></div><div class="card kpi"><span>عدد الطلبات</span><b>${o.length.toLocaleString('ar-EG')}</b></div><div class="card kpi"><span>متوسط الطلب</span><b>${money(o.length?sum/o.length:0)}</b></div><div class="card kpi"><span>مصروفات النهارده</span><b>${money(ex)}</b></div><div class="card kpi"><span>تكلفة المبيعات</span><b>${money(cost)}</b></div><div class="card kpi"><span>صافي الربح</span><b class="${sum-cost-ex<0?'low':''}">${money(sum-cost-ex)}</b></div><div class="card kpi"><span>أصناف ناقصة</span><b class="${low.length?'low':''}">${low.length.toLocaleString('ar-EG')}</b></div></div>
+ <div class="pos" style="grid-template-columns:1fr 1fr"><div class="card"><h3 style="margin-top:0">الأكثر مبيعًا</h3>${tl.map(([n,q])=>`<div class="row"><span>${esc(n)}</span><b>${q.toLocaleString('ar-EG')}</b></div>`).join('')||'<small>لسه مفيش مبيعات.</small>'}</div>
+ <div class="card"><h3 style="margin-top:0">طرق الدفع</h3>${Object.entries(pays).map(([n,v])=>`<div class="row"><span>${n}</span><b>${money(v)}</b></div>`).join('')||'<small>لسه مفيش مبيعات.</small>'}</div></div>
+ <div class="card"><h3 style="margin-top:0">نسخة احتياطية</h3><div class="form"><button class="btn alt" onclick="$('#bk').value=JSON.stringify(S)">عرض النسخة</button><button class="btn alt" onclick="restore()">استرجاع من النص</button></div><textarea id="bk" rows="3" style="width:100%;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:8px" placeholder="انسخ النص واحتفظ بيه، أو الصق نسخة قديمة هنا"></textarea></div><p><button class="btn bad" onclick="reset()">مسح كل البيانات</button></p>`;
+}
+function vMenu(){
+ return `<div class="card"><div class="form"><input id="mn" placeholder="اسم الصنف"><input id="mc" placeholder="القسم" list="cl" size="10"><datalist id="cl">${[...new Set(S.menu.map(m=>m.c))].map(c=>`<option>${esc(c)}`).join('')}</datalist><input id="mp" type="number" placeholder="السعر" style="width:90px"><button class="btn" onclick="addItem()">إضافة للمنيو</button></div>
+ <div class="wrap"><table><tr><th>الصنف</th><th>القسم</th><th>السعر</th><th>التكلفة</th><th></th></tr>${S.menu.map(m=>`<tr><td>${esc(m.n)}</td><td>${esc(m.c)}</td><td><input type="number" value="${m.p}" style="width:90px" onchange="setPrice(${m.id},this.value)"></td><td><input type="number" value="${m.k||0}" style="width:90px" onchange="setCost(${m.id},this.value)"></td><td><button class="btn alt" onclick="delItem(${m.id})">حذف</button></td></tr>`).join('')}</table></div>
+ <small style="color:var(--mut)">الأصناف الأساسية بتخصم من المخزون تلقائيًا. الأصناف الجديدة بتتباع من غير خصم مخزون.</small></div>`;
+}
+function vExp(){const l=S.exp.slice().reverse();return `<div class="card"><div class="form"><input id="en" placeholder="البند (إيجار، كهربا، رواتب...)" list="el"><datalist id="el"><option>إيجار<option>كهرباء<option>رواتب<option>مشتريات</datalist><input id="ev" type="number" placeholder="المبلغ" style="width:110px"><button class="btn" onclick="addExp()">تسجيل مصروف</button></div><div class="wrap"><table><tr><th>البند</th><th>المبلغ</th><th>التاريخ</th></tr>${l.map(x=>`<tr><td>${esc(x.n)}</td><td>${money(x.v)}</td><td>${new Date(x.t).toLocaleDateString('ar-EG')}</td></tr>`).join('')||'<tr><td colspan="3">مفيش مصروفات متسجلة.</td></tr>'}</table></div></div>`}
+function setS(k,v){S.set[k]=k=='name'?v:Math.max(0,+v||0);save();render()}
+function addStaff(){const n=$('#stn').value.trim();if(n){S.staff.push(n);save();render()}}
+function delStaff(i){if(S.staff.length>1){S.staff.splice(i,1);cur=0;save();render()}}
+function vSet(){const cs=Object.entries(S.cust).sort((a,b)=>b[1].sp-a[1].sp);return `<div class="pos" style="grid-template-columns:1fr 1fr"><div class="card"><h3 style="margin-top:0">إعدادات الكافيه</h3><div class="form"><label>الاسم <input value="${esc(S.set.name)}" onchange="setS('name',this.value)"></label></div><div class="form"><label>ضريبة % <input type="number" value="${S.set.tax}" style="width:80px" onchange="setS('tax',this.value)"></label><label>خدمة % <input type="number" value="${S.set.svc}" style="width:80px" onchange="setS('svc',this.value)"></label></div><h3>الموظفين</h3>${S.staff.map((n,i)=>`<div class="row"><span>${esc(n)}</span><button class="btn alt" onclick="delStaff(${i})">حذف</button></div>`).join('')}<div class="form" style="margin-top:8px"><input id="stn" placeholder="اسم موظف"><button class="btn" onclick="addStaff()">إضافة</button></div></div><div class="card"><h3 style="margin-top:0">العملاء</h3><div class="wrap"><table><tr><th>الموبايل</th><th>زيارات</th><th>إنفاق</th><th>نقاط</th></tr>${cs.map(([p,u])=>`<tr><td>${esc(p)}</td><td>${u.vis}</td><td>${money(u.sp)}</td><td>${u.pts}</td></tr>`).join('')||'<tr><td colspan="4">لسه مفيش عملاء. اكتب موبايل العميل في الكاشير.</td></tr>'}</table></div></div></div>`}
+function render(){
+ $('#nav').innerHTML=Object.entries(TABS).map(([k,v])=>`<button class="${k==tab?'on':''}" onclick="go('${k}')">${v}${k=='inv'&&lowN()?' ⚠️'+lowN():''}</button>`).join('');
+ $('#app').innerHTML={pos:vPos,ord:vOrd,inv:vInv,exp:vExp,rep:vRep,menu:vMenu,set:vSet}[tab]();
+}
+render();
+</script>
+</body>
+</html>
